@@ -6,14 +6,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Buildozer Docker image
-        run: |
-          docker run --rm -v ${{ github.workspace }}:/work -w /work kivy/buildozer \
-            bash -lc "buildozer android debug"
+      # اختياري: تثبيت بايثون (بعض خطوات buildozer تحتاجه)
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      # هذا الأكشن يوفّر بيئة Buildozer + Android SDK/NDK تلقائياً
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        with:
+          workdir: .
+          buildozer_version: stable
+          command: buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
