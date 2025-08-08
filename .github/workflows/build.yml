@@ -1,0 +1,22 @@
+name: build-apk
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Buildozer Docker image
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/work -w /work kivy/buildozer \
+            bash -lc "buildozer android debug"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: polymarket-btc-helper-apk
+          path: bin/*.apk
